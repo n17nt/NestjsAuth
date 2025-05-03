@@ -1,4 +1,3 @@
+// export class JwtAut extends {
 
-export class JwtAut extends {
-    
-}
+// }
