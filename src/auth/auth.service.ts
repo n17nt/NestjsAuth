@@ -9,6 +9,20 @@ export class AuthService {
     @Inject(forwardRef(() => UsersService)) private userService: UsersService,
     private jwtService: JwtService,
   ) {}
+
+  async create(data: any) {
+    const user = await this.userService.create(data);
+    return user;
+  }
+  async refresh(token: string) {
+    const user = await this.userService.refresh(token);
+    const access = await this.jwtService.signAsync({
+      id: user.id,
+      role: user.role,
+      username: user.username,
+    });
+    return { user, access };
+  }
   async login(loginData: LoginDto) {
     console.log(loginData);
     const user = await this.userService.validateUser(
@@ -32,6 +46,6 @@ export class AuthService {
     );
     await this.userService.updateUser(user.id, { refreshToken: refreshToken });
 
-    return { user, token };
+    return { user, token, refreshToken };
   }
 }

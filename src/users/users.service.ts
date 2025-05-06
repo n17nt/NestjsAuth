@@ -8,6 +8,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { compare } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -20,16 +21,34 @@ export class UsersService {
   async findAll() {
     return await this.userRepo.find();
   }
+  async refresh(token: string) {
+    const user = await this.userRepo.findOne({
+      where: { refreshToken: token },
+    });
+    return user;
+  }
 
   findOne(id: number) {
     return `This action returns a #${id} user`;
   }
   async validateUser(username: string, password: string) {
-    const user = await this.userRepo.findOneBy({ username });
-    if (!user) throw new NotFoundException('User topilmadi');
-    if (!(user.password === password))
-      throw new BadRequestException('Parol xato');
-    return user;
+    try {
+      const user = await this.userRepo.findOne({
+        where: { username },
+        select: ['email', 'password', 'role', 'username', 'name', 'id'],
+      });
+      if (!user) throw new NotFoundException('User topilmadi');
+
+      console.log(user);
+
+      const checking = await compare(password, user.password);
+      console.log(checking);
+
+      if (!checking) throw new BadRequestException('Parol xato');
+      return user;
+    } catch (error) {
+      console.log(error);
+    }
   }
   async updateUser(id: string, updateData: any) {
     const user = await this.userRepo.findOneBy({ id });
