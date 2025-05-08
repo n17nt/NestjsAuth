@@ -7,10 +7,16 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { Course } from './course/entities/course.entity';
+import { RedisModule } from './redis/redis.module';
+import { PaymentModule } from './payment/payment.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: 'config.env' }),
+    RedisModule,
+    MongooseModule.forRoot(process.env.MONGO_URL),
     TypeOrmModule.forRoot({
       type: 'postgres',
       username: 'postgres',
@@ -19,12 +25,13 @@ import { AuthModule } from './auth/auth.module';
       host: 'localhost',
       password: '1234',
       synchronize: true,
-      entities: [User],
+      entities: [User, Course],
       autoLoadEntities: true,
     }),
     CourseModule,
     UsersModule,
     AuthModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

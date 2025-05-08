@@ -20,7 +20,7 @@ export class User {
   role: UserRole;
   @Column({ nullable: true, select: false })
   refreshToken: string;
-  @Column({ default: true })
+  @Column({ default: false })
   isActive: boolean;
 
   @BeforeInsert()

@@ -3,6 +3,8 @@ import { LoginDto } from './dto/login-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 
+import { randomBytes, randomInt } from 'crypto';
+import { sendMessage } from './utils/otp';
 @Injectable()
 export class AuthService {
   constructor(
@@ -12,6 +14,14 @@ export class AuthService {
 
   async create(data: any) {
     const user = await this.userService.create(data);
+    const code = randomInt(100000, 1000000);
+    console.log(code);
+    const responcha = await sendMessage(
+      user.email,
+      `<h1>Sizning tasdiqlash kodingiz: ${code}</h1>`,
+    );
+    console.log(responcha);
+
     return user;
   }
   async refresh(token: string) {

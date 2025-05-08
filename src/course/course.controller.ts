@@ -9,9 +9,11 @@ import {
   Query,
   ParseIntPipe,
   ParseArrayPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
+import { LoggingInterceptor } from './interceptors/logging.interseptor';
 
 @Controller('course')
 export class CourseController {
@@ -23,6 +25,7 @@ export class CourseController {
   }
 
   @Get()
+  @UseInterceptors(LoggingInterceptor)
   findAll() {
     return this.courseService.findAll();
   }
